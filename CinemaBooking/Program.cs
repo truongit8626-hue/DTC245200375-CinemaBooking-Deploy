@@ -10,7 +10,8 @@ CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
 CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
 // 1. Kết nối DB
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseMySQL(
+        builder.Configuration.GetConnectionString("DefaultConnection")!));
 
 // 2. Identity + ROLE (🔥 QUAN TRỌNG)
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
