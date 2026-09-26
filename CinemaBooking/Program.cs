@@ -88,8 +88,23 @@ using (var scope = app.Services.CreateScope())
     if (!db.Movies.Any())
     {
         db.Movies.AddRange(
-            new Movie { Title = "Avengers", Genre = "Action", Duration = 120, Description = "Marvel" },
-            new Movie { Title = "Conan", Genre = "Anime", Duration = 90, Description = "Detective" }
+            new Movie
+            {
+                Title = "Avengers",
+                Genre = "Action",
+                Duration = 120,
+                Description = "Marvel",
+                Poster = "/images/Avengers.jpg"
+            },
+
+            new Movie
+            {
+                Title = "Conan",
+                Genre = "Anime",
+                Duration = 90,
+                Description = "Detective",
+                Poster = "/images/conan.jpg"
+            }
         );
 
         db.SaveChanges();
