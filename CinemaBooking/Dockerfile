@@ -10,6 +10,7 @@ RUN dotnet publish "CinemaBooking.csproj" -c Release -o /app/publish /p:UseAppHo
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
+RUN apt-get update && apt-get install -y curl
 
 COPY --from=build /app/publish .
 
