@@ -76,33 +76,28 @@ services:
     networks:
       - cinema-backend
 
+
   nginx:
     image: nginx:latest
-
     container_name: cinema-nginx
-
     restart: unless-stopped
-
 
     ports:
       - "80:80"
 
-
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
-
 
     depends_on:
       - app
 
-
     networks:
       - cinema-backend
+
+
   prometheus:
     image: prom/prometheus:latest
-
     container_name: cinema-prometheus
-
     restart: unless-stopped
 
     ports:
@@ -114,11 +109,49 @@ services:
     networks:
       - cinema-backend
 
+
+  loki:
+    image: grafana/loki:latest
+    container_name: cinema-loki
+    restart: unless-stopped
+
+    ports:
+      - "3100:3100"
+
+    volumes:
+      - ./loki/loki-config.yml:/etc/loki/local-config.yaml:ro
+
+    command:
+      - -config.file=/etc/loki/local-config.yaml
+
+    networks:
+      - cinema-backend
+
+
+  promtail:
+    image: grafana/promtail:latest
+    container_name: cinema-promtail
+    restart: unless-stopped
+
+    volumes:
+      - ./promtail/promtail-config.yml:/etc/promtail/config.yml:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+    command:
+      - -config.file=/etc/promtail/config.yml
+
+    depends_on:
+      loki:
+        condition: service_started
+
+    networks:
+      - cinema-backend
+
+
   grafana:
     image: grafana/grafana:latest
-
     container_name: cinema-grafana
-
     restart: unless-stopped
 
     ports:
@@ -128,15 +161,16 @@ services:
       - grafana_data:/var/lib/grafana
 
     depends_on:
-      - prometheus
+      prometheus:
+        condition: service_started
 
     networks:
       - cinema-backend
+
+
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:latest
-
     container_name: cinema-cadvisor
-
     restart: unless-stopped
 
     ports:
@@ -150,6 +184,8 @@ services:
 
     networks:
       - cinema-backend
+
+
 volumes:
   mysql_data:
   grafana_data:
