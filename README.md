@@ -1,130 +1,375 @@
-﻿# CinemaBooking
+﻿# CinemaBooking Deployment System
 
 ## 1. Giới thiệu
 
-CinemaBooking là hệ thống quản lý và đặt vé xem phim được xây dựng bằng ASP.NET Core MVC.
+CinemaBooking là hệ thống quản lý đặt vé xem phim được triển khai theo mô hình container hóa sử dụng Docker Compose.
 
-Hệ thống hỗ trợ quản lý phim, suất chiếu, phòng chiếu, ghế ngồi, đặt vé và quản lý người dùng. Hệ thống có phân quyền Admin và User, đồng thời có Dashboard thống kê phục vụ quản trị.
+Hệ thống bao gồm:
 
-## 2. Công nghệ sử dụng
+- ASP.NET Core Web Application
+- MySQL Database
+- phpMyAdmin Database Management
+- Nginx Reverse Proxy
+- Prometheus Monitoring
+- Grafana Dashboard
+- cAdvisor Container Metrics
+- Loki Centralized Logging
+- Promtail Log Collector
 
-- ASP.NET Core MVC
-- Entity Framework Core
-- SQL Server
-- ASP.NET Core Identity
-- HTML / CSS / JavaScript
-- Chart.js
 
-## 3. Chức năng chính
+## 2. Kiến trúc hệ thống
 
-### Người dùng
+```
+                    Client Browser
 
-- Đăng ký tài khoản.
-- Đăng nhập / đăng xuất.
-- Xem danh sách phim.
-- Tìm kiếm phim.
-- Lọc phim theo thể loại.
-- Sắp xếp phim.
-- Xem thông tin phim và suất chiếu.
-- Chọn ghế và đặt vé.
+                          |
+                          v
 
-### Quản trị viên
+                    Nginx :80
 
-- Quản lý phim: thêm, sửa, xóa.
-- Quản lý suất chiếu.
-- Quản lý phòng chiếu và ghế.
-- Kiểm tra trùng lịch chiếu.
-- Dashboard thống kê.
-- Xem số lượng vé và doanh thu.
-- Phân quyền chức năng quản trị.
+                          |
+                          v
 
-## 4. Cấu trúc dự án
+                ASP.NET Core Application
 
-```text
-CinemaBooking
-├── Areas
-├── Controllers
-├── Data
-├── Migrations
-├── Models
-├── ViewModels
-├── Views
-├── wwwroot
-├── docs
-├── Program.cs
-├── appsettings.json
-└── README.md
-5. Yêu cầu môi trường
--Visual Studio 2022 hoặc phiên bản tương thích.
--.NET SDK phù hợp với phiên bản của project.
--SQL Server / SQL Server Express.
--SQL Server Management Studio (SSMS) là công cụ tùy chọn để kiểm tra cơ sở dữ liệu.
-6. Cấu hình cơ sở dữ liệu
+                          |
+                          v
 
-Cấu hình chuỗi kết nối trong appsettings.json:
-"ConnectionStrings": {
-  "DefaultConnection": "Server=.;Database=CinemaDB;Trusted_Connection=True;TrustServerCertificate=True"
-}
-Tên cơ sở dữ liệu sử dụng trong project là CinemaDB.
-7. Tạo và cập nhật cơ sở dữ liệu
+                    MySQL Database
 
-Mở Package Manager Console trong Visual Studio và chạy:
-Update-Database
-Lệnh này dùng để áp dụng các Migration vào SQL Server.
 
-8. Chạy project
-Mở solution CinemaBooking.sln bằng Visual Studio.
-Kiểm tra chuỗi kết nối SQL Server trong appsettings.json.
-Đảm bảo SQL Server đang hoạt động.
-Thực hiện Update-Database nếu cơ sở dữ liệu chưa được cập nhật.
-Nhấn Ctrl + F5 hoặc F5 để chạy ứng dụng.
-Trình duyệt sẽ mở trang CinemaBooking.
-9. Tài khoản và phân quyền
 
-Hệ thống sử dụng ASP.NET Core Identity.
+Monitoring:
 
-Có hai nhóm quyền chính:
+        cAdvisor
+            |
+            v
+       Prometheus
+            |
+            v
+        Grafana
 
-User: sử dụng các chức năng đặt vé.
-Admin: quản lý phim, suất chiếu và xem Dashboard.
 
-Các chức năng quản trị được bảo vệ bằng phân quyền Admin.
 
-10. Dữ liệu mẫu
+Logging:
 
-Project có dữ liệu mẫu để phục vụ kiểm thử và trình diễn, bao gồm phim, phòng chiếu, suất chiếu, ghế và dữ liệu đặt vé.
+      Docker Logs
+            |
+            v
+        Promtail
+            |
+            v
+          Loki
+            |
+            v
+        Grafana Explore
+```
 
-11. Dashboard
 
-Dashboard dành cho Admin cung cấp các thống kê cơ bản:
+## 3. Công nghệ sử dụng
 
-Tổng số phim.
-Tổng số phòng.
-Tổng số suất chiếu đang hoạt động.
-Tổng số vé.
-Tổng doanh thu.
-Thống kê số vé theo từng phim bằng biểu đồ.
-12. Xử lý lỗi
+| Thành phần | Công nghệ |
+|---|---|
+| Backend | ASP.NET Core |
+| Database | MySQL 8.4 |
+| Container | Docker |
+| Orchestration | Docker Compose |
+| Reverse Proxy | Nginx |
+| Monitoring | Prometheus + Grafana |
+| Metrics Exporter | cAdvisor |
+| Logging | Loki + Promtail |
+| Source Control | GitHub |
 
-Hệ thống có kiểm tra dữ liệu đầu vào và xử lý một số trường hợp lỗi:
 
-Dữ liệu nhập không hợp lệ.
-Thời lượng phim không hợp lệ.
-Trùng lịch chiếu.
-Không tìm thấy dữ liệu.
-Lỗi khi thao tác dữ liệu.
-Người dùng không có quyền truy cập chức năng Admin.
-13. Minh chứng sử dụng AI
+## 4. Cấu trúc thư mục
 
-Nhật ký sử dụng AI trong quá trình phát triển dự án được lưu tại:
+```
+CinemaBooking_Deploy
 
-docs/AI_Assistance_Log.md
+├── CinemaBooking
+│   └── ASP.NET Core Source Code
+│
+├── nginx
+│   └── nginx.conf
+│
+├── prometheus
+│   └── prometheus.yml
+│
+├── loki
+│   └── loki-config.yml
+│
+├── promtail
+│   └── promtail-config.yml
+│
+├── grafana
+│
+├── docker-compose.yml
+│
+└── .env.example
+```
 
-Tài liệu ghi lại prompt, nội dung hỗ trợ từ AI, phần code được hỗ trợ và quá trình sinh viên kiểm tra, chỉnh sửa và chạy thử.
-14. Ghi chú
 
-Dự án được phát triển nhằm phục vụ mục đích học tập và trình diễn các chức năng của một hệ thống quản lý và đặt vé xem phim.
-## 15. Phiên bản
+## 5. Yêu cầu môi trường
 
-Phiên bản hiện tại hoàn thiện các chức năng chính của Digital Skills Test 2
-và tài liệu phục vụ cài đặt, chạy thử và minh chứng sử dụng AI.
+Cần cài đặt:
+
+- Docker Desktop
+- Docker Compose
+
+
+Kiểm tra:
+
+```bash
+docker --version
+
+docker compose version
+```
+
+
+## 6. Cấu hình môi trường
+
+Tạo file `.env`
+
+Ví dụ:
+
+```env
+MYSQL_ROOT_PASSWORD=your_password
+
+MYSQL_DATABASE=CinemaDB
+
+MYSQL_USER=cinema_app
+
+MYSQL_PASSWORD=your_password
+
+PHPMYADMIN_PORT=8081
+```
+
+
+## 7. Khởi chạy hệ thống
+
+
+Build và chạy toàn bộ container:
+
+```bash
+docker compose up -d
+```
+
+
+Kiểm tra trạng thái:
+
+```bash
+docker compose ps
+```
+
+
+Kết quả mong muốn:
+
+```
+cinema-app          Up
+
+cinema-mysql        Healthy
+
+cinema-nginx        Up
+
+cinema-prometheus   Up
+
+cinema-grafana      Up
+
+cinema-loki         Up
+
+cinema-promtail     Up
+
+cinema-cadvisor     Up
+```
+
+
+## 8. Danh sách dịch vụ
+
+| Service | Port |
+|-|-|
+| Website | 80 |
+| ASP.NET | 8080 |
+| phpMyAdmin | 8081 |
+| cAdvisor | 8082 |
+| Prometheus | 9090 |
+| Grafana | 3000 |
+| Loki | 3100 |
+
+
+## 9. Reverse Proxy Nginx
+
+Người dùng truy cập:
+
+```
+http://localhost
+```
+
+
+Luồng xử lý:
+
+```
+Client
+
+ ↓
+
+Nginx
+
+ ↓
+
+ASP.NET Container
+```
+
+
+Security headers được cấu hình:
+
+```
+X-Content-Type-Options
+
+X-Frame-Options
+
+X-XSS-Protection
+```
+
+
+## 10. Monitoring System
+
+
+### Prometheus
+
+Truy cập:
+
+```
+http://localhost:9090
+```
+
+
+Kiểm tra Targets:
+
+```
+Status
+→ Targets
+```
+
+
+Các target:
+
+```
+prometheus     UP
+
+cadvisor       UP
+```
+
+
+### Grafana
+
+Truy cập:
+
+```
+http://localhost:3000
+```
+
+
+Datasource:
+
+```
+Prometheus
+
+URL:
+http://prometheus:9090
+```
+
+
+Dashboard giám sát:
+
+- CPU Usage
+- Memory Usage
+- Container Status
+- Network Usage
+
+
+## 11. Centralized Logging
+
+
+Hệ thống log:
+
+```
+Docker Container
+
+        |
+
+    Promtail
+
+        |
+
+      Loki
+
+        |
+
+    Grafana Explore
+```
+
+
+Datasource:
+
+```
+Loki
+
+URL:
+
+http://loki:3100
+```
+
+
+## 12. LogQL Examples
+
+
+### Application Log
+
+```logql
+{container="cinema-app"}
+```
+
+
+### Nginx Access Log
+
+```logql
+{container="cinema-nginx"}
+```
+
+
+### MySQL Log
+
+```logql
+{container="cinema-mysql"}
+```
+
+
+## 13. Stop System
+
+
+Dừng toàn bộ:
+
+```bash
+docker compose down
+```
+
+
+Khởi động lại:
+
+```bash
+docker compose up -d
+```
+
+
+## 14. Git Commit History
+
+
+```
+feat: add Nginx reverse proxy and security headers
+
+feat: add Prometheus Grafana monitoring
+
+feat: add Loki Promtail centralized logging
+
+docs: update deployment documentation
+```
