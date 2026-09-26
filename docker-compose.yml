@@ -98,8 +98,61 @@ services:
 
     networks:
       - cinema-backend
+  prometheus:
+    image: prom/prometheus:latest
+
+    container_name: cinema-prometheus
+
+    restart: unless-stopped
+
+    ports:
+      - "9090:9090"
+
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+
+    networks:
+      - cinema-backend
+
+  grafana:
+    image: grafana/grafana:latest
+
+    container_name: cinema-grafana
+
+    restart: unless-stopped
+
+    ports:
+      - "3000:3000"
+
+    volumes:
+      - grafana_data:/var/lib/grafana
+
+    depends_on:
+      - prometheus
+
+    networks:
+      - cinema-backend
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+
+    container_name: cinema-cadvisor
+
+    restart: unless-stopped
+
+    ports:
+      - "8082:8080"
+
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+
+    networks:
+      - cinema-backend
 volumes:
   mysql_data:
+  grafana_data:
 
 
 networks:
